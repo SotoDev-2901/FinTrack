@@ -1,15 +1,25 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { RxHamburgerMenu, RxCross2, RxExit } from "react-icons/rx";
+import { useAuth } from "../../authentication/hooks/useAuth";
 
-export const NavItem = ({ to, label, onClick }: { to: string; label: string; onClick: () => void; }) => (
-  <NavLink to={to}
+export const NavItem = ({
+  to,
+  label,
+  onClick,
+}: {
+  to: string;
+  label: string;
+  onClick: () => void;
+}) => (
+  <NavLink
+    to={to}
     className={({ isActive }) =>
       `text-white px-4 py-2 hover:text-secondary duration-300 ease-in hover:scale-105 ${
         isActive ? "border-b-2 border-secondary" : ""
       }`
     }
-    onClick={() => onClick()}
+    onClick={onClick}
   >
     {label}
   </NavLink>
@@ -17,14 +27,26 @@ export const NavItem = ({ to, label, onClick }: { to: string; label: string; onC
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsOpen(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
 
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-background shadow relative">
       {/* Logo */}
       <div className="flex items-center space-x-2">
-        <NavLink to="/" className="text-xl font-semibold text-white">
+        <NavLink to="/" className="text-xl font-semibold text-white flex items-center">
           <img
             src="src/assets/Logo.png"
             alt="Logo FinTrack"
@@ -63,21 +85,20 @@ export const Navbar = () => {
         />
 
         {/* Botón de salir en móvil */}
-        <NavLink
-          to="#"
+        <button
           className="text-white px-4 py-2 hover:text-secondary duration-300 ease-in flex items-center space-x-2 md:hidden"
-          onClick={() => setIsOpen(false)}
+          onClick={handleLogout}
         >
           <RxExit className="text-secondary text-xl" />
           <span>Salir</span>
-        </NavLink>
+        </button>
       </div>
 
       {/* Icono de salida (solo desktop) */}
       <div className="hidden md:flex">
-        <NavLink to="#">
+        <button onClick={handleLogout} className="focus:outline-none">
           <RxExit className="text-secondary text-xl transform transition-transform duration-200 hover:scale-110" />
-        </NavLink>
+        </button>
       </div>
     </nav>
   );
