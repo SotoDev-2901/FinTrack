@@ -3,7 +3,8 @@ import { AuthContext } from "./AuthContext";
 import { authReducer } from "../reducers/authReducer";
 import type { AuthState } from "../reducers/authReducersInterface";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../config/firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db} from "../../config/firebase";
 
 const initialState: AuthState = {
   logged: false,
@@ -13,7 +14,7 @@ const initialState: AuthState = {
 
 const loadAuthState = (): AuthState => {
   try {
-    const savedState = localStorage.getItem('authState');
+    const savedState = localStorage.getItem("authState");
     if (savedState) {
       return JSON.parse(savedState);
     }
@@ -21,13 +22,17 @@ const loadAuthState = (): AuthState => {
     console.error("Error al cargar el estado de autenticación:", error);
   }
   return initialState;
-}
+};
 
 export const AuthProvider = ({ children }: { children: any }) => {
-  const [authState, dispatch] = useReducer(authReducer, initialState, loadAuthState);
+  const [authState, dispatch] = useReducer(
+    authReducer,
+    initialState,
+    loadAuthState
+  );
 
   useEffect(() => {
-    localStorage.setItem('authState', JSON.stringify(authState));
+    localStorage.setItem("authState", JSON.stringify(authState));
   }, [authState]);
 
   useEffect(() => {
@@ -49,7 +54,11 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
@@ -62,19 +71,30 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
   const register = async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        createdAt: serverTimestamp(),
+      });
+
       await signOut(auth);
       dispatch({ type: "REGISTER" });
     } catch (error: any) {
       dispatch({ type: "ERROR", payload: { errorMessage: error.message } });
     }
-  }
+  };
 
   const logout = async () => {
     try {
       await signOut(auth);
       dispatch({ type: "LOGOUT" });
-      localStorage.removeItem('authState');
+      localStorage.removeItem("authState");
     } catch (error: any) {
       dispatch({ type: "ERROR", payload: { errorMessage: error.message } });
     }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { RxHamburgerMenu, RxCross2, RxExit } from "react-icons/rx";
 import { useAuth } from "../../authentication/hooks/useAuth";
+import Logo from '../../assets/Logo.png';
 
 export const NavItem = ({
   to,
@@ -43,12 +44,12 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-background shadow relative">
+    <nav className="flex items-center justify-between px-6 py-3 bg-background shadow relative border-b border-secondary/50">
       {/* Logo */}
       <div className="flex items-center space-x-2">
         <NavLink to="/" className="text-xl font-semibold text-white flex items-center">
           <img
-            src="src/assets/Logo.png"
+            src={Logo}
             alt="Logo FinTrack"
             className="w-12 h-12 rounded-full bg-white/5 ring-1 ring-white/10 transform transition-transform duration-200 hover:scale-110 inline-block mr-2"
           />

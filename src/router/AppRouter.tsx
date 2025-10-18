@@ -1,9 +1,8 @@
-// IMPORT REACT
 import { Route, Routes, Navigate } from "react-router-dom"
 
-// IMPORT PAGES
 import { HomePages } from "../FinTrack/pages/HomePages"
 import { TransactionsPages } from "../FinTrack/pages/TransactionsPages"
+import { TransactionCategoriesPages } from "../FinTrack/pages/TransactionCategoriesPages"
 import { GoalsPages } from "../FinTrack/pages/GoalsPages"
 import { NotFound } from "../FinTrack/pages/NotFoundPages"
 import { LoginPages } from "../authentication/pages/LoginPages"
@@ -23,6 +22,7 @@ export const AppRouter = () => {
       <Route path="/register" element={authState.logged ? <Navigate to="/" replace /> : <RegisterPages />} />
       <Route path="/" element={<ProtectedRoute><HomePages /></ProtectedRoute>} />
       <Route path="/transactions" element={<ProtectedRoute><TransactionsPages /></ProtectedRoute>} />
+      <Route path="/transactions/categories" element={<ProtectedRoute><TransactionCategoriesPages /></ProtectedRoute>} />
       <Route path="/goals" element={<ProtectedRoute><GoalsPages /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
