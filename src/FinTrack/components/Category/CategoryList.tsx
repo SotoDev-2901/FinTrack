@@ -2,13 +2,13 @@ import { CategoryItem } from './CategoryItem';
 
 interface Category {
   id: string;
-  icon: string;
   name: string;
+  type: 'income' | 'expense';
 }
 
 interface CategoryListProps {
   categories: Category[];
-  onEdit: (id: string) => void;
+  onEdit: (id: string, name: string, type: 'income' | 'expense') => void;
   onDelete: (id: string) => void;
 }
 
@@ -18,9 +18,10 @@ export const CategoryList = ({ categories, onEdit, onDelete }: CategoryListProps
       {categories.map((category) => (
         <CategoryItem
           key={category.id}
-          icon={category.icon}
+          id={category.id}
           name={category.name}
-          onEdit={() => onEdit(category.id)}
+          type={category.type}
+          onEdit={onEdit}
           onDelete={() => onDelete(category.id)}
         />
       ))}

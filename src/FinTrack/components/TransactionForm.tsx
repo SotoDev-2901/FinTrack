@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 interface TransactionFormData {
@@ -9,36 +8,17 @@ interface TransactionFormData {
   description?: string;
 }
 
-export const TransactionForm = () => {
-  const [formData, setFormData] = useState<TransactionFormData>({
-    type: "expense",
-    amount: 0,
-    category: "",
-    date: new Date().toISOString().split("T")[0],
-    description: "",
-  });
+interface TransactionFormProps {
+  formData: TransactionFormData;
+  categories: Array<{ id: string; name: string; type: 'expense' | 'income' }>;
+  onSubmit: (e: any) => void;
+  onInputChange: (e: any) => void;
+  onTypeChange: (type: 'expense' | 'income') => void;
+}
 
-    const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    
-      console.log('Submitting transaction:', formData);
+export const TransactionForm = ({ formData, categories, onSubmit, onInputChange, onTypeChange }: TransactionFormProps) => {
 
-    setFormData({
-      type: 'expense',
-      amount: 0,
-      category: '',
-      date: new Date().toISOString().split('T')[0],
-      description: ''
-    });
-  };
-
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'amount' ? parseFloat(value) || 0 : value
-    }));
-  };
+  const filteredCategories = categories.filter(cat => cat.type === formData.type);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
@@ -52,12 +32,12 @@ export const TransactionForm = () => {
       </div>
 
       <div className="w-full max-w-xl bg-background shadow-2xl rounded-2xl p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           {/* Tipo de Transacción */}
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => setFormData(prev => ({ ...prev, type: 'expense' }))}
+              onClick={() => onTypeChange('expense')}
               className={`py-4 rounded-xl font-semibold transition-all duration-200 ${
                 formData.type === 'expense'
                   ? 'bg-secondary text-white shadow-lg shadow-cyan-500/50 scale-105'
@@ -68,7 +48,7 @@ export const TransactionForm = () => {
             </button>
             <button
               type="button"
-              onClick={() => setFormData(prev => ({ ...prev, type: 'income' }))}
+              onClick={() => onTypeChange('income')}
               className={`py-4 rounded-xl font-semibold transition-all duration-200 ${
                 formData.type === 'income'
                   ? 'bg-secondary text-white shadow-lg shadow-cyan-500/50 scale-105'
@@ -88,7 +68,7 @@ export const TransactionForm = () => {
               type="number"
               name="amount"
               value={formData.amount || ''}
-              onChange={handleInputChange}
+              onChange={onInputChange}
               step="0.01"
               min="0"
               placeholder="0.00"
@@ -102,21 +82,24 @@ export const TransactionForm = () => {
             <select
               name="category"
               value={formData.category}
-              onChange={handleInputChange}
+              onChange={onInputChange}
               required
               className="col-span-3 bg-[#242F3A] text-slate-300 px-4 py-4 rounded-xl border border-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary transition-all cursor-pointer"
             >
               <option value="">Selecciona una categoría</option>
-              <option value="alimentacion">🍔 Alimentación</option>
-              <option value="transporte">🚗 Transporte</option>
-              <option value="entretenimiento">🎮 Entretenimiento</option>
-              <option value="salud">🏥 Salud</option>
-              <option value="educacion">📚 Educación</option>
-              <option value="servicios">💡 Servicios</option>
-              <option value="compras">🛍️ Compras</option>
-              <option value="otros">📦 Otros</option>
+              {filteredCategories.length === 0 ? (
+                <option value="" disabled>
+                  No hay categorías de {formData.type === 'expense' ? 'gastos' : 'ingresos'}
+                </option>
+              ) : (
+                filteredCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))
+              )}
             </select>
-            <Link
+              <Link
               to="/transactions/categories"
               className="col-span-2 bg-[#242F3A] text-slate-300 rounded-xl hover:bg-slate-700 transition-all text-sm font-medium flex items-center justify-center"
             >
@@ -130,7 +113,7 @@ export const TransactionForm = () => {
               type="date"
               name="date"
               value={formData.date}
-              onChange={handleInputChange}
+              onChange={onInputChange}
               required
               className="w-full py-4 px-4 bg-[#242F3A] border border-gray-400 text-gray-400 placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary transition-all [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
             />
@@ -141,7 +124,7 @@ export const TransactionForm = () => {
             <textarea
               name="description"
               value={formData.description}
-              onChange={handleInputChange}
+              onChange={onInputChange}
               placeholder="Descripción (opcional)"
               rows={4}
               className="w-full bg-[#242F3A] text-gray-400 px-4 py-3 rounded-xl border border-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none transition-all placeholder-gray-400"

@@ -1,51 +1,95 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Navbar } from "../components/Navbar";
-import { CategoryHeader } from "../components/CategoryHeader";
-import { CategoryTypeTabs } from "../components/CategoryTypeTabs";
-import { CategoryList } from "../components/CategoryList";
+import { CategoryHeader } from "../components/Category/CategoryHeader";
+import { CategoryTypeTabs } from "../components/Category/CategoryTypeTabs";
+import { CategoryList } from "../components/Category/CategoryList";
+import { CategoryModal } from "../components/Category/CategoryModal";
+import { useCategory } from "../hooks/useCategory";
 
 export const TransactionCategoriesPages = () => {
   const [activeType, setActiveType] = useState<"expense" | "income">("expense");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<{
+    id: string;
+    name: string;
+    type: 'income' | 'expense';
+  } | null>(null);
 
-  const expenseCategories = [
-    { id: "1", icon: "🍴", name: "Comida" },
-    { id: "2", icon: "🚗", name: "Transporte" },
-    { id: "3", icon: "🏠", name: "Vivienda" },
-    { id: "4", icon: "🎉", name: "Entretenimiento" },
-    { id: "5", icon: "🛡️", name: "Salud" },
-    { id: "6", icon: "🛍️", name: "Compras" },
-  ];
+  const { 
+    categories, 
+    createCategory, 
+    updateCategory, 
+    deleteCategory 
+  } = useCategory();
 
-  const incomeCategories = [
-    { id: "7", icon: "💼", name: "Salario" },
-    { id: "8", icon: "💻", name: "Freelance" },
-    { id: "9", icon: "📈", name: "Inversiones" },
-  ];
+  const currentCategories = useMemo(() => {
+    return categories.filter(cat => cat.type === activeType);
+  }, [categories, activeType]);
 
-  const currentCategories =
-    activeType === "expense" ? expenseCategories : incomeCategories;
-
-  const handleEdit = (id: string) => {
-    console.log("Edit category:", id);
+  // Handler para abrir modal en modo creación
+  const handleAddCategory = () => {
+    setSelectedCategory(null);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    console.log("Delete category:", id);
+  // Handler para cerrar modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCategory(null);
+  };
+
+  // Handler para abrir modal en modo edición
+  const handleEditCategory = (id: string, name: string, type: 'income' | 'expense') => {
+    setSelectedCategory({ id, name, type });
+    setIsModalOpen(true);
+  };
+
+  // Handler para eliminar categoría
+  const handleDelete = async (id: string) => {
+    if (window.confirm('¿Estás seguro de eliminar esta categoría?')) {
+      try {
+        await deleteCategory(id);
+      } catch (error) {
+        console.error('Error al eliminar categoría:', error);
+        alert('Error al eliminar la categoría');
+      }
+    }
+  };
+
+  // Handler para guardar (crear o actualizar)
+  const handleSave = async (name: string, type: 'income' | 'expense') => {
+    try {
+      if (selectedCategory) {
+        await updateCategory(selectedCategory.id, name, type);
+      } else {
+        await createCategory(name, type);
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error al guardar categoría:', error);
+      alert('Error al guardar la categoría');
+    }
   };
 
   return (
     <>
       <Navbar />
       <div className="p-8 bg-background min-h-screen">
-        <CategoryHeader />
+        <CategoryHeader onAddCategory={handleAddCategory} />
         <CategoryTypeTabs
           activeType={activeType}
           onTypeChange={setActiveType}
         />
         <CategoryList
           categories={currentCategories}
-          onEdit={handleEdit}
+          onEdit={handleEditCategory}
           onDelete={handleDelete}
+        />
+        <CategoryModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleSave}
+          category={selectedCategory}
         />
       </div>
     </>
