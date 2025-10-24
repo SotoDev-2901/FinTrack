@@ -8,7 +8,7 @@ interface CollaboratorsModalProps {
   onClose : () => void;
   goalTitle: string;
   collaborators: GoalCollaborator[];
-  isOwner: boolean; // Nuevo prop
+  isOwner: boolean;
   onAddCollaborator: (email: string) => void;
   onRemoveCollaborator: (id: string) => void;
 }
@@ -18,7 +18,7 @@ export const CollaboratorsModal = ({
   onClose, 
   goalTitle, 
   collaborators, 
-  isOwner, // Nuevo
+  isOwner,
   onAddCollaborator, 
   onRemoveCollaborator 
 }: CollaboratorsModalProps) => {

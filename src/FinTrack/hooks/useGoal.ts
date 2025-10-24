@@ -200,7 +200,6 @@ export const useGoal = () => {
       ...doc.data()
     })) as GoalCollaborator[];
 
-    // Obtener todas las contribuciones de este objetivo
     const contributionsRef = collection(db, 'goalContributions');
     const contributionsQuery = query(
       contributionsRef,
@@ -210,7 +209,6 @@ export const useGoal = () => {
     const contributionsSnapshot = await getDocs(contributionsQuery);
     const contributions = contributionsSnapshot.docs.map(doc => doc.data());
 
-    // Calcular el total de contribuciones por email
     const contributionsByEmail = contributions.reduce((acc, contribution) => {
       const email = contribution.userEmail;
       if (!acc[email]) {
@@ -220,7 +218,6 @@ export const useGoal = () => {
       return acc;
     }, {} as Record<string, number>);
 
-    // Actualizar el totalContribution de cada colaborador
     return collaborators.map(collaborator => ({
       ...collaborator,
       totalContribution: contributionsByEmail[collaborator.email] || 0
