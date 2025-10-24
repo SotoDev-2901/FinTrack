@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { Navbar } from "../components/Navbar";
-import { CategoryHeader } from "../components/Category/CategoryHeader";
+import { PageHeader } from "../components/PageHeader";
 import { CategoryTypeTabs } from "../components/Category/CategoryTypeTabs";
 import { CategoryList } from "../components/Category/CategoryList";
 import { CategoryModal } from "../components/Category/CategoryModal";
 import { useCategory } from "../hooks/useCategory";
+import { FaPlus } from "react-icons/fa"
 
 export const TransactionCategoriesPages = () => {
   const [activeType, setActiveType] = useState<"expense" | "income">("expense");
@@ -75,7 +76,12 @@ export const TransactionCategoriesPages = () => {
     <>
       <Navbar />
       <div className="p-8 bg-background min-h-screen">
-        <CategoryHeader onAddCategory={handleAddCategory} />
+        <PageHeader
+          title="Administrar categorías"
+          buttonText="Nueva Categoría"
+          onButtonClick={handleAddCategory}
+          icon={<FaPlus />}
+        />
         <CategoryTypeTabs
           activeType={activeType}
           onTypeChange={setActiveType}

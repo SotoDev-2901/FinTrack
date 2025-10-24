@@ -19,9 +19,8 @@ export const RegisterPages = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    // Validar que las contraseñas coincidan
     if (formData.password !== formData.confirmPassword) {
-      // Manejar error de contraseñas no coincidentes
+      alert("❌Las contraseñas no coinciden");
       return;
     }
     await register(formData.email, formData.password);

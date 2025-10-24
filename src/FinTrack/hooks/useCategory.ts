@@ -12,9 +12,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../authentication/hooks/useAuth";
-import { categoryReducer, initialState } from "../reducers/categoryReducers";
+import { categoryReducer, initialState } from "../reducers/category/categoryReducers";
 
-import type { Category } from "../reducers/categoryReducersInterface";
+import type { Category } from "../reducers/category/categoryReducersInterface";
 
 export const useCategory = () => {
   const [state, dispatch] = useReducer(categoryReducer, initialState);
