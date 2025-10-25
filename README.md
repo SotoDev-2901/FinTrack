@@ -1,27 +1,111 @@
-**Nombre de la Materia:**
-Electiva 1
+# FinTrack 💰
 
-**Nombre del Proyecto:**
-FinTrack
+## Información del Proyecto
 
+**Materia:** Electiva 1  
+**Nombre del Proyecto:** FinTrack  
 **Integrantes:**
-Luis Felipe Soto Palacios
-Juan Pablo Gómez Torres
+- Luis Felipe Soto Palacios
+- Juan Pablo Gómez Torres
 
-**Descripcion**
-FinTrack es una aplicación web desarrollada con React + TypeScript para el seguimiento de ingresos, gastos, metas financieras y estadísticas en tiempo real.
-Su propósito es ofrecer una interfaz sencilla y agradable para que los usuarios gestionen sus finanzas personales, establezcan metas y visualicen su progreso.
+---
 
-**Funcionalidades**
--Transacciones: Registro de ingresos y gastos asignando categorías y filtros para administración de categorías personalizadas.
--Metas Financieras: Creación, edición y eliminación de metas con el fin de visualizar el progreso y permitiendo añadir contribuciones y colaboradores.
--Panel de Control: Estadísticas de ingresos y gastos con gráfico que permite ver por categoría.
--Autenticación de Usuarios: Registro y login con redirección protegida mediante AppRouter.
+## Descripción
 
-**Requerimientos**
-Node.js
-Navegador web Google Chrome
-Conexión a Internet
+FinTrack es una aplicación web moderna desarrollada con **React + TypeScript** para el seguimiento integral de finanzas personales. Permite a los usuarios gestionar sus ingresos, gastos, establecer metas financieras y visualizar estadísticas en tiempo real a través de una interfaz intuitiva y atractiva.
 
-**Instalación y Ejecución**
+La aplicación está diseñada para facilitar el control financiero personal mediante herramientas de análisis, categorización y seguimiento de objetivos, todo sincronizado en la nube con **Firebase**.
 
+---
+
+## ✨ Funcionalidades Principales
+
+### 📊 Panel de Control (Dashboard)
+- Visualización del balance total
+- Estadísticas de ingresos y gastos de los últimos 30 días
+- Gráfico de barras por categorías (gastos e ingresos)
+- Gráfico de evolución del saldo de los últimos 6 meses
+- Actualización en tiempo real
+
+### 💸 Gestión de Transacciones
+- Registro de ingresos y gastos
+- Asignación de categorías personalizadas
+- Descripción y fecha de cada transacción
+- Filtrado y búsqueda de transacciones
+- Edición y eliminación de registros
+
+### 🗂️ Categorías Personalizadas
+- Creación de categorías de ingresos y gastos
+- Personalización con nombre, icono y color
+- Gestión completa (crear, editar, eliminar)
+- Filtros por tipo (ingreso/gasto)
+
+### 🎯 Metas Financieras
+- Creación de objetivos de ahorro con título, monto y fecha límite
+- Visualización del progreso con barra de avance
+- Sistema de contribuciones con historial detallado
+- **Colaboración en metas:** Invitar colaboradores por email
+- Permisos diferenciados (dueño vs colaborador)
+- Sincronización en tiempo real entre usuarios
+- Notificación cuando se completa una meta
+
+### 🔐 Autenticación de Usuarios
+- Registro de nuevos usuarios
+- Inicio de sesión seguro
+- Rutas protegidas con validación de autenticación
+- Persistencia de sesión
+- Cierre de sesión
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+### Frontend
+- **React 18** - Biblioteca de UI
+- **TypeScript** - Tipado estático
+- **Vite** - Build tool y dev server
+- **React Router DOM** - Enrutamiento
+- **Tailwind CSS** - Estilos y diseño responsive
+- **Recharts** - Gráficos y visualizaciones
+
+### Backend & Base de Datos
+- **Firebase Authentication** - Autenticación de usuarios
+- **Cloud Firestore** - Base de datos NoSQL en tiempo real
+- **Firebase Security Rules** - Reglas de seguridad
+
+### Arquitectura
+- **Reducer Pattern** - Gestión de estado
+- **Custom Hooks** - Lógica reutilizable
+- **Context API** - Estado global de autenticación
+- **Protected Routes** - Control de acceso
+
+---
+
+## 📋 Requerimientos
+
+- **Node.js** versión 16 o superior
+- **npm** o **yarn**
+- Navegador web moderno (Google Chrome, Firefox, Edge)
+- Conexión a Internet (para Firebase)
+
+---
+
+## 🚀 Instalación y Ejecución
+
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/tu-usuario/fintrack.git
+cd fintrack
+```
+### 2. Instalar dependencias
+```bash
+npm install
+# o
+yarn install
+```
+### 3. Ejecutar en modo desarrollo
+```bash
+npm run dev
+# o
+yarn dev
+```
