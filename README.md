@@ -1,73 +1,27 @@
-# React + TypeScript + Vite
+**Nombre de la Materia:**
+Electiva 1
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Nombre del Proyecto:**
+FinTrack
 
-Currently, two official plugins are available:
+**Integrantes:**
+Luis Felipe Soto Palacios
+Juan Pablo Gómez Torres
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Descripcion**
+FinTrack es una aplicación web desarrollada con React + TypeScript para el seguimiento de ingresos, gastos, metas financieras y estadísticas en tiempo real.
+Su propósito es ofrecer una interfaz sencilla y agradable para que los usuarios gestionen sus finanzas personales, establezcan metas y visualicen su progreso.
 
-## React Compiler
+**Funcionalidades**
+-Transacciones: Registro de ingresos y gastos asignando categorías y filtros para administración de categorías personalizadas.
+-Metas Financieras: Creación, edición y eliminación de metas con el fin de visualizar el progreso y permitiendo añadir contribuciones y colaboradores.
+-Panel de Control: Estadísticas de ingresos y gastos con gráfico que permite ver por categoría.
+-Autenticación de Usuarios: Registro y login con redirección protegida mediante AppRouter.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Requerimientos**
+Node.js
+Navegador web Google Chrome
+Conexión a Internet
 
-## Expanding the ESLint configuration
+**Instalación y Ejecución**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
