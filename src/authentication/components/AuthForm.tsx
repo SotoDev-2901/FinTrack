@@ -21,6 +21,7 @@ interface AuthFormProps {
   onSubmit: (e: any) => void;
   onChange: (e: any) => void;
   showForgotPassword?: boolean;
+  socialNode?: React.ReactNode;
 }
 
 export const AuthForm = ({ 
@@ -36,6 +37,7 @@ export const AuthForm = ({
   onSubmit,
   onChange,
   showForgotPassword = false,
+  socialNode,
 }: AuthFormProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -82,6 +84,19 @@ export const AuthForm = ({
             {buttonText}
           </button>
         </form>
+
+        
+          {socialNode && (
+          <div className="mt-6">
+            <div className="flex items-center gap-4 my-4">
+              <hr className="flex-1 border-t border-gray-700/40" />
+              <span className="text-gray-500 text-sm">O continúa con</span>
+              <hr className="flex-1 border-t border-gray-700/40" />
+            </div>
+
+            {socialNode}
+          </div>
+        )}
 
         <div className="text-center mt-6">
           <p className="text-gray-600 text-sm">

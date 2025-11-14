@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CurrencyInput } from "./CurrencyInput";
 
 interface TransactionFormData {
   type: 'expense' | 'income';
@@ -19,6 +20,16 @@ interface TransactionFormProps {
 export const TransactionForm = ({ formData, categories, onSubmit, onInputChange, onTypeChange }: TransactionFormProps) => {
 
   const filteredCategories = categories.filter(cat => cat.type === formData.type);
+
+  const handleAmountChange = (value: number) => {
+    const syntheticEvent = {
+      target: {
+        name: 'amount',
+        value: value
+      }
+    };
+    onInputChange(syntheticEvent);
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
@@ -64,14 +75,12 @@ export const TransactionForm = ({ formData, categories, onSubmit, onInputChange,
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl font-bold">
               $
             </span>
-            <input
-              type="number"
+            <CurrencyInput
+              id="amount"
               name="amount"
-              value={formData.amount || ''}
-              onChange={onInputChange}
-              step="0.01"
-              min="0"
-              placeholder="0.00"
+              value={formData.amount || 0}
+              onChange={handleAmountChange}
+              placeholder="0"
               required
               className="w-full pl-10 pr-4 py-4 bg-[#242F3A] border border-gray-400 text-gray-400 placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
             />

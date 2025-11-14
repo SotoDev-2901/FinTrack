@@ -14,8 +14,19 @@ export const BalanceAreaChart = ({ data }: BalanceAreaChartProps) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value);
+  };
+
+  const formatYAxisTick = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(0)}K`;
+    } else {
+      return `$${value}`;
+    }
   };
 
   return (
@@ -24,7 +35,7 @@ export const BalanceAreaChart = ({ data }: BalanceAreaChartProps) => {
       <p className="text-gray-400 text-sm mb-6">Últimos 6 meses</p>
 
       <ResponsiveContainer width="100%" height={300}>
-        <AreaChart data={data}>
+        <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <defs>
             <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#06B6D4" stopOpacity={0.8} />
@@ -32,8 +43,17 @@ export const BalanceAreaChart = ({ data }: BalanceAreaChartProps) => {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-          <XAxis dataKey="month" stroke="#9CA3AF" />
-          <YAxis stroke="#9CA3AF" tickFormatter={formatCurrency} />
+          <XAxis 
+            dataKey="month" 
+            stroke="#9CA3AF" 
+            fontSize={12}
+          />
+          <YAxis 
+            stroke="#9CA3AF" 
+            tickFormatter={formatYAxisTick}
+            fontSize={12}
+            width={60}
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: '#1F2937',
@@ -41,7 +61,8 @@ export const BalanceAreaChart = ({ data }: BalanceAreaChartProps) => {
               borderRadius: '8px',
               color: '#fff'
             }}
-            formatter={(value: number) => formatCurrency(value)}
+            formatter={(value: number) => [formatCurrency(value), 'Saldo']}
+            labelStyle={{ color: '#06B6D4' }}
           />
           <Area
             type="monotone"

@@ -90,6 +90,10 @@ export const useGoal = () => {
       description: goalData.description || '',
       targetAmount: goalData.targetAmount,
       currentAmount: 0,
+      createdBy: {
+        id: authState.user.uid,
+        email: authState.user.email || ''
+      },
       targetDate: goalData.targetDate,
       createdAt: now,
       updatedAt: now

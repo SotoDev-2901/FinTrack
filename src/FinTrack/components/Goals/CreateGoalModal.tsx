@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
 import { FaPlus } from "react-icons/fa"; 
+import { CurrencyInput } from "../CurrencyInput";
 
 interface CreateGoalModalProps {
   isOpen: boolean;
@@ -14,22 +15,25 @@ interface CreateGoalModalProps {
 
 export const CreateGoalModal = ({ isOpen, onClose, onCreateGoal }: CreateGoalModalProps) => {
   const [title, setTitle] = useState("");
-  const [targetAmount, setTargetAmount] = useState("");
+  const [targetAmount, setTargetAmount] = useState(0);
   const [targetDate, setTargetDate] = useState("");
+
+  const handleAmountChange = (value: number) => {
+    setTargetAmount(value);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const numAmount = parseFloat(targetAmount);
-    if (numAmount > 0 && title.trim() && targetDate) {
+    if (targetAmount > 0 && title.trim() && targetDate) {
       onCreateGoal({
         title: title.trim(),
-        targetAmount: numAmount,
+        targetAmount: targetAmount,
         targetDate,
       });
       
       setTitle("");
-      setTargetAmount("");
+      setTargetAmount(0);
       setTargetDate("");
       onClose();
     }
@@ -66,7 +70,6 @@ export const CreateGoalModal = ({ isOpen, onClose, onCreateGoal }: CreateGoalMod
     >
       <form onSubmit={handleSubmit} id="create-goal-form">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Nombre del Objetivo */}
           <div>
             <label htmlFor="title" className="block text-white font-semibold mb-2">
               Nombre del Objetivo
@@ -82,26 +85,22 @@ export const CreateGoalModal = ({ isOpen, onClose, onCreateGoal }: CreateGoalMod
             />
           </div>
 
-          {/* Cantidad Meta */}
           <div>
             <label htmlFor="targetAmount" className="block text-white font-semibold mb-2">
               Cantidad Meta
             </label>
-            <input
-              type="number"
+            <CurrencyInput
               id="targetAmount"
+              name="targetAmount"
               value={targetAmount}
-              onChange={(e) => setTargetAmount(e.target.value)}
-              placeholder="$1,500.00"
-              className="w-full px-4 py-3 bg-[#242F3A] text-white rounded-lg border border-gray-600 focus:border-secondary focus:outline-none"
+              onChange={handleAmountChange} 
+              placeholder="0"
+              className="w-full px-4 py-3 bg-[#242F3A] text-white rounded-lg border border-gray-600 focus:border-secondary focus:outline-none pl-8"
               required
-              min="0.01"
-              step="0.01"
             />
           </div>
         </div>
 
-        {/* Fecha Límite */}
         <div className="mb-6">
           <label htmlFor="targetDate" className="block text-white font-semibold mb-2">
             Fecha Límite

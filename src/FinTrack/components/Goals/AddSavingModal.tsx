@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa"; 
 import { Modal } from "./Modal";
+import { CurrencyInput } from "../CurrencyInput";
 
 interface AddSavingModalProps {
   isOpen: boolean;
@@ -12,16 +13,19 @@ interface AddSavingModalProps {
 }
 
 export const AddSavingModal = ({ isOpen, onClose, goalTitle, currentAmount, targetAmount, onAddSaving }: AddSavingModalProps) => {
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const [note, setNote] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
+  const handleAmountChange = (value: number) => {
+    setAmount(value);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const numAmount = parseFloat(amount);
-    if (numAmount > 0) {
-      onAddSaving(numAmount, note, date);
-      setAmount("");
+    if (amount > 0) {
+      onAddSaving(amount, note, date);
+      setAmount(0);
       setNote("");
       setDate(new Date().toISOString().split('T')[0]);
       onClose();
@@ -78,16 +82,14 @@ export const AddSavingModal = ({ isOpen, onClose, goalTitle, currentAmount, targ
           <label htmlFor="amount" className="block text-white font-semibold mb-2">
             Cantidad
           </label>
-          <input
-            type="number"
+          <CurrencyInput
             id="amount"
+            name="amount"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="$ 150.00"
-            className="w-full px-4 py-3 bg-[#242F3A] text-white rounded-lg border border-gray-600 focus:border-secondary focus:outline-none"
+            onChange={handleAmountChange}
+            placeholder="0"
+            className="w-full px-4 py-3 bg-[#242F3A] text-white rounded-lg border border-gray-600 focus:border-secondary focus:outline-none pl-8"
             required
-            min="0.01"
-            step="0.01"
           />
         </div>
 

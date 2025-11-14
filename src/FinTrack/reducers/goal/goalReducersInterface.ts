@@ -6,6 +6,10 @@ export interface Goal {
   targetAmount: number;
   currentAmount: number;
   targetDate: string;
+  createdBy: {
+    id: string;
+    email: string;
+  }
   createdAt: string;
   updatedAt: string;
 }

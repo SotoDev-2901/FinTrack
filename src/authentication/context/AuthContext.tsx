@@ -6,6 +6,7 @@ interface AuthContextState {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  singInWithGoogle: () => Promise<void>;
 }
 
 export const AuthContext = createContext({} as AuthContextState);

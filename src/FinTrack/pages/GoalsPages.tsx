@@ -21,7 +21,7 @@ export const GoalsPages = () => {
     addCollaborator,
     getCollaborators,
     removeCollaborator,
-    refetch // Importante: necesitamos esta función
+    refetch
   } = useGoal();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -160,6 +160,7 @@ export const GoalsPages = () => {
             goalTitle={selectedGoal.title}
             collaborators={collaborators}
             isOwner={selectedGoal.userId === authState.user?.uid}
+            createdBy={selectedGoal.createdBy}
             onAddCollaborator={handleAddCollaborator}
             onRemoveCollaborator={handleRemoveCollaborator}
           />

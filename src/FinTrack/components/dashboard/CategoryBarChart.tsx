@@ -18,8 +18,26 @@ export const CategoryBarChart = ({ expenseData, incomeData }: CategoryBarChartPr
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value);
+  };
+
+  const formatYAxisTick = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(0)}K`;
+    } else {
+      return `$${value}`;
+    }
+  };
+
+  const formatXAxisTick = (tickItem: string) => {
+    if (tickItem.length > 10) {
+      return tickItem.substring(0, 8) + '...';
+    }
+    return tickItem;
   };
 
   const currentData = activeTab === 'expenses' ? expenseData : incomeData;
@@ -53,10 +71,23 @@ export const CategoryBarChart = ({ expenseData, incomeData }: CategoryBarChartPr
       </div>
 
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={currentData}>
+        <BarChart data={currentData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-          <XAxis dataKey="name" stroke="#9CA3AF" />
-          <YAxis stroke="#9CA3AF" tickFormatter={formatCurrency} />
+          <XAxis 
+            dataKey="name" 
+            stroke="#9CA3AF"
+            fontSize={12}
+            tickFormatter={formatXAxisTick}
+            angle={-45}
+            textAnchor="end"
+            height={60}
+          />
+          <YAxis 
+            stroke="#9CA3AF" 
+            tickFormatter={formatYAxisTick}
+            fontSize={12}
+            width={60}
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: '#1F2937',
@@ -64,7 +95,8 @@ export const CategoryBarChart = ({ expenseData, incomeData }: CategoryBarChartPr
               borderRadius: '8px',
               color: '#fff'
             }}
-            formatter={(value: number) => formatCurrency(value)}
+            formatter={(value: number) => [formatCurrency(value), activeTab === 'expenses' ? 'Gasto' : 'Ingreso']}
+            labelStyle={{ color: '#06B6D4' }}
           />
           <Bar dataKey="amount" fill="#06B6D4" radius={[8, 8, 0, 0]} />
         </BarChart>

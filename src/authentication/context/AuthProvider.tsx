@@ -4,7 +4,8 @@ import { authReducer } from "../reducers/authReducer";
 import type { AuthState } from "../reducers/authReducersInterface";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db} from "../../config/firebase";
+import { auth, db, googleProvider} from "../../config/firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const initialState: AuthState = {
   logged: false,
@@ -100,8 +101,17 @@ export const AuthProvider = ({ children }: { children: any }) => {
     }
   };
 
+  const singInWithGoogle = async (): Promise<void> => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Error al iniciar sesión con Google:", error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ authState, login, register, logout }}>
+    <AuthContext.Provider value={{ authState, login, register, logout, singInWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

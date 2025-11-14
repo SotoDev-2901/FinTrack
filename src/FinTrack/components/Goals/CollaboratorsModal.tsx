@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Modal } from './Modal'
-import { FaSearch, FaTrash, FaUserPlus } from "react-icons/fa";
+import { FaSearch, FaTrash, FaUserPlus, FaCrown } from "react-icons/fa";
 import type { GoalCollaborator } from '../../reducers/goal/goalReducersInterface';
 
 interface CollaboratorsModalProps {
@@ -9,6 +9,10 @@ interface CollaboratorsModalProps {
   goalTitle: string;
   collaborators: GoalCollaborator[];
   isOwner: boolean;
+  createdBy: {
+    id: string;
+    email: string;
+  };
   onAddCollaborator: (email: string) => void;
   onRemoveCollaborator: (id: string) => void;
 }
@@ -19,6 +23,7 @@ export const CollaboratorsModal = ({
   goalTitle, 
   collaborators, 
   isOwner,
+  createdBy,
   onAddCollaborator, 
   onRemoveCollaborator 
 }: CollaboratorsModalProps) => {
@@ -62,7 +67,6 @@ export const CollaboratorsModal = ({
       showFooter={true}
       footerButtons={footerButtons}
     >
-      {/* Solo mostrar si es dueño */}
       {isOwner && (
         <div className="mb-8">
           <h3 className="text-xl font-semibold text-white mb-4">Añadir Colaborador</h3>
@@ -90,11 +94,29 @@ export const CollaboratorsModal = ({
         </div>
       )}
 
-      {/* Lista de Colaboradores Actuales */}
       <div>
         <h3 className="text-xl font-semibold text-white mb-4">
           Colaboradores {isOwner ? 'Actuales' : ''}
         </h3>
+
+        <div className="mb-4">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-900/20 to-yellow-800/20 rounded-lg border border-yellow-600/30">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                <FaCrown className="text-yellow-400" />
+              </div>
+              <div>
+                <p className="text-white font-semibold flex items-center gap-2">
+                  {createdBy?.email}
+                  <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full">
+                    Propietario
+                  </span>
+                </p>
+                <p className="text-sm text-gray-400">Creador del objetivo</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {collaborators.length === 0 ? (
           <div className="text-center py-8 text-gray-400">
@@ -116,7 +138,6 @@ export const CollaboratorsModal = ({
                   </div>
                 </div>
 
-                {/* Solo mostrar botón eliminar si es dueño */}
                 {isOwner && (
                   <button
                     onClick={() => handleRemoveCollaborator(collaborator.id)}
