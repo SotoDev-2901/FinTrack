@@ -1,90 +1,167 @@
-import { useState } from "react"
 import { Navbar } from "../components/Navbar"
-import { TransactionForm } from "../components/TransactionForm"
-import { useAuth } from "../../authentication/hooks/useAuth"
+import { PageHeader } from "../components/PageHeader"
+import { TransactionHistory } from "../components/transaction/TransactionHistory"
+import { CreateTransactionModal } from "../components/transaction/CreateTransactionModal"
+import { FaPlus } from "react-icons/fa"
+import { useState, useEffect } from "react"
 import { useCategory } from "../hooks/useCategory"
-import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { useTransaction } from "../hooks/useTransaction"
 
-interface TransactionsFormData {
+type EditingTransactionType = {
+  id: string;
   type: 'expense' | 'income';
   amount: number;
-  category: string;
+  categoryId: string;
   date: string;
   description?: string;
-}
+} | null;
 
 export const TransactionsPages = () => {
-  const { authState } = useAuth();
   const { categories } = useCategory();
+  const { 
+    transactions, 
+    loading, 
+    error,
+    createTransaction, 
+    updateTransaction, 
+    deleteTransaction,
+    clearError
+  } = useTransaction();
+  
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<EditingTransactionType>(null);
 
-  const [formData, setFormData] = useState<TransactionsFormData>({
-    type: 'expense',
-    amount: 0,
-    category: '',
-    date: new Date().toISOString().split('T')[0],
-    description: '',
-  })
+  useEffect(() => {
+    if (error) {
+      console.error('Error en transacciones:', error);
+    }
+  }, [error]);
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    if (formData.amount <= 0) {
-      alert("El monto debe ser mayor a cero");
+  const handleCreateTransaction = async (
+    newTransactionData: {
+      type: 'expense' | 'income';
+      amount: number;
+      date: string;
+      description?: string;
+    },
+    categoryId: string 
+  ) => {
+    try {
+      clearError();
+      
+      await createTransaction(newTransactionData, categoryId); 
+    } catch (error: any) {
+      alert('❌ Error al guardar la transacción: ' + error.message);
+    }
+  };
+
+
+  const handleUpdateTransaction = async (
+    transactionId: string, 
+    updatedData: {
+      type: 'expense' | 'income';
+      amount: number;
+      date: string;
+      description?: string;
+    },
+    categoryId: string 
+  ) => {
+    try {
+      clearError(); 
+      
+      await updateTransaction(transactionId, updatedData, categoryId); 
+      setEditingTransaction(null);
+    } catch (error: any) {
+      alert('❌ Error al actualizar la transacción: ' + error.message);
+    }
+  };
+
+  const handleEditTransaction = (transaction: any) => {
+  
+
+  const editData: EditingTransactionType = {
+    id: transaction.id,
+    type: transaction.type,
+    amount: Number(transaction.amount) || 0,
+    categoryId: transaction.categoryId || '', 
+    date: transaction.date,
+    description: transaction.description || ''
+  };
+  
+  setEditingTransaction(editData);
+  setIsCreateModalOpen(true);
+};
+
+  const handleDeleteTransaction = async (transactionId: string) => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
       return;
     }
 
     try {
-      const transactionsData = {
-        type: formData.type,
-        amount: formData.amount,
-        category: formData.category,
-        date: formData.date,
-        description: formData.description,
-        userId: authState.user?.uid,
-        createAt: Timestamp.now()
-      };
-
-      await addDoc(collection(db, "transactions"), transactionsData);
-
-      setFormData({
-        type: 'expense',
-        amount: 0,
-        category: '',
-        date: new Date().toISOString().split('T')[0],
-        description: ''
-      });
-
-      alert('✅ Transacción guardada exitosamente');
+      clearError();
+      await deleteTransaction(transactionId);
     } catch (error: any) {
-      alert('❌ Error al guardar la transacción: ' + error.message);
+      alert('❌ Error al eliminar la transacción: ' + error.message);
     }
-  }
+  };
 
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'amount' ? parseFloat(value) : value,
-    }));
-  }
+  const handleCloseModal = () => {
+    setIsCreateModalOpen(false);
+    setEditingTransaction(null);
+  };
 
-  const handleTypeChange = (type: 'expense' | 'income') => {
-    setFormData((prev) => ({
-      ...prev,
-      type,
-      category: '',
-    }));
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="p-8 bg-background min-h-screen flex items-center justify-center">
+          <div className="text-white text-xl">Cargando transacciones...</div>
+        </div>
+      </>
+    );
   }
 
   return (
     <>
       <Navbar />
-      <TransactionForm
-        formData={formData}
+      <div className="p-8 bg-background min-h-screen">
+        <PageHeader 
+          title="Historial de Transacciones"
+          description="Consulta y gestiona todos tus ingresos y gastos"
+          buttonText="Nueva Transacción"
+          onButtonClick={() => setIsCreateModalOpen(true)}
+          icon={<FaPlus />}
+        />
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-500 text-white rounded-lg">
+            Error: {error}
+            <button 
+              onClick={clearError}
+              className="ml-2 underline hover:no-underline"
+            >
+              Cerrar
+            </button>
+          </div>
+        )}
+
+        <div className="mt-8">
+          <TransactionHistory
+            transactions={transactions}
+            onEdit={handleEditTransaction}
+            onDelete={handleDeleteTransaction}
+          />
+        </div>
+      </div>
+
+      <CreateTransactionModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseModal}
+        onCreateTransaction={handleCreateTransaction}
+        onUpdateTransaction={handleUpdateTransaction}
         categories={categories}
-        onSubmit={handleSubmit}
-        onInputChange={handleInputChange}
-        onTypeChange={handleTypeChange}
+        editingTransaction={editingTransaction}
       />
     </>
   )

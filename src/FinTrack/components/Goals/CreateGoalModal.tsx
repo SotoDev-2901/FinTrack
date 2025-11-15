@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal } from "./Modal";
+import { Modal } from "../Modal";
 import { FaPlus } from "react-icons/fa"; 
 import { CurrencyInput } from "../CurrencyInput";
 

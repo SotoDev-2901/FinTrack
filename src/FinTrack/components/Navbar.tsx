@@ -45,7 +45,6 @@ export const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between px-6 py-3 bg-background shadow relative border-b border-secondary/50">
-      {/* Logo */}
       <div className="flex items-center space-x-2">
         <NavLink to="/" className="text-xl font-semibold text-white flex items-center">
           <img
@@ -57,7 +56,6 @@ export const Navbar = () => {
         </NavLink>
       </div>
 
-      {/* Botón hamburguesa (visible solo en móvil) */}
       <button
         className="text-white text-2xl md:hidden focus:outline-none"
         onClick={toggleMenu}
@@ -65,7 +63,6 @@ export const Navbar = () => {
         {isOpen ? <RxCross2 /> : <RxHamburgerMenu />}
       </button>
 
-      {/* Links de navegación */}
       <div
         className={`flex flex-col md:flex-row md:items-center md:space-x-12 absolute md:static bg-background md:bg-transparent left-0 w-full md:w-auto transition-all duration-300 ease-in-out ${
           isOpen
@@ -85,7 +82,6 @@ export const Navbar = () => {
           onClick={() => setIsOpen(false)}
         />
 
-        {/* Botón de salir en móvil */}
         <button
           className="text-white px-4 py-2 hover:text-secondary duration-300 ease-in flex items-center space-x-2 md:hidden"
           onClick={handleLogout}
@@ -95,7 +91,6 @@ export const Navbar = () => {
         </button>
       </div>
 
-      {/* Icono de salida (solo desktop) */}
       <div className="hidden md:flex">
         <button onClick={handleLogout} className="focus:outline-none">
           <RxExit className="text-secondary text-xl transform transition-transform duration-200 hover:scale-110" />

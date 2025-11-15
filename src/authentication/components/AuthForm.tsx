@@ -40,21 +40,21 @@ export const AuthForm = ({
   socialNode,
 }: AuthFormProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-lg bg-background shadow-2xl rounded-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-2 sm:px-4">
+      <div className="w-full max-w-lg bg-background shadow-2xl rounded-2xl p-4 sm:p-6 lg:p-8 mx-2 sm:mx-0">
 
-        <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">{title}</h1>
-          <p className="text-gray-400 mt-2 text-sm md:text-base">{subtitle}</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{title}</h1>
+          <p className="text-gray-400 mt-2 text-xs sm:text-sm md:text-base">{subtitle}</p>
         </div>
 
         {errorMessage && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500 rounded-xl">
-            <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+            <p className="text-red-500 text-xs sm:text-sm text-center">{errorMessage}</p>
           </div>
         )}
 
-        <form className="space-y-5" onSubmit={onSubmit}>
+        <form className="space-y-4 sm:space-y-5" onSubmit={onSubmit}>
           {fields.map((field) => (
             <AuthInput
               key={field.id}
@@ -65,13 +65,13 @@ export const AuthForm = ({
               value={formData[field.name] || ""}
               required
               onChange={onChange}
-              className="w-full px-4 py-3 border border-gray-400 text-gray-400 placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary transition-all"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-400 text-gray-400 placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary transition-all text-sm sm:text-base"
             />
           ))}
 
           {showForgotPassword && (
             <div className="text-right">
-              <Link to="#" className="text-secondary text-sm hover:underline">
+              <Link to="#" className="text-secondary text-xs sm:text-sm hover:underline">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
@@ -79,18 +79,17 @@ export const AuthForm = ({
 
           <button
             type="submit"
-            className="w-full bg-secondary hover:bg-sky-600 text-white font-semibold py-3 rounded-xl shadow transition-all"
+            className="w-full bg-secondary hover:bg-sky-600 text-white font-semibold py-2 sm:py-3 rounded-xl shadow transition-all text-sm sm:text-base"
           >
             {buttonText}
           </button>
         </form>
 
-        
-          {socialNode && (
-          <div className="mt-6">
+        {socialNode && (
+          <div className="mt-4 sm:mt-6">
             <div className="flex items-center gap-4 my-4">
               <hr className="flex-1 border-t border-gray-700/40" />
-              <span className="text-gray-500 text-sm">O continúa con</span>
+              <span className="text-gray-500 text-xs sm:text-sm">O continúa con</span>
               <hr className="flex-1 border-t border-gray-700/40" />
             </div>
 
@@ -98,8 +97,8 @@ export const AuthForm = ({
           </div>
         )}
 
-        <div className="text-center mt-6">
-          <p className="text-gray-600 text-sm">
+        <div className="text-center mt-4 sm:mt-6">
+          <p className="text-gray-600 text-xs sm:text-sm">
             {footerText}{" "}
             <Link to={footerLinkTo} className="text-secondary font-medium hover:underline">
               {footerLinkText}

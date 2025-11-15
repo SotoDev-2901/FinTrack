@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const useCurrencyInput = (initialValue: number = 0) => {
   const [value, setValue] = useState(initialValue);
   
+  // AGREGAR este useEffect para sincronizar con cambios externos
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
   // Formatear valor para mostrar (con puntos y símbolo $)
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('es-CO', {

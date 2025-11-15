@@ -75,7 +75,7 @@ export const TransactionCategoriesPages = () => {
   return (
     <>
       <Navbar />
-      <div className="p-8 bg-background min-h-screen">
+      <div className="p-4 sm:p-6 lg:p-8 bg-background min-h-screen">
         <PageHeader
           title="Administrar categorías"
           buttonText="Nueva Categoría"

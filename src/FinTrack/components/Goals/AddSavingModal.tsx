@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa"; 
-import { Modal } from "./Modal";
+import { Modal } from "../Modal";
 import { CurrencyInput } from "../CurrencyInput";
 
 interface AddSavingModalProps {

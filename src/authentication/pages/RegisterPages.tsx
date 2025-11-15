@@ -28,14 +28,12 @@ export const RegisterPages = () => {
     if (authState.logged) navigate("/");
   };
 
-    // Función para manejar Google
   const handleGoogleSignIn = async () => {
     try {
       await singInWithGoogle();
       navigate("/");
     } catch (error) {
       console.error("Error con Google:", error);
-      // Opcional: mostrar error en UI
     }
   };
 

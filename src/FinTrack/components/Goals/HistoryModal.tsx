@@ -1,5 +1,5 @@
 import type { GoalContribution } from '../../reducers/goal/goalReducersInterface';
-import { Modal } from './Modal'
+import { Modal } from '../Modal'
 import { CiCirclePlus } from "react-icons/ci"
 
 

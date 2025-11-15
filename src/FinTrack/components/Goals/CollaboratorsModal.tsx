@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Modal } from './Modal'
+import { Modal } from '../Modal'
 import { FaSearch, FaTrash, FaUserPlus, FaCrown } from "react-icons/fa";
 import type { GoalCollaborator } from '../../reducers/goal/goalReducersInterface';
 

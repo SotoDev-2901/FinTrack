@@ -72,8 +72,6 @@ export const GoalsPages = () => {
     // Recargar el historial
     const updatedHistory = await getContributions(selectedGoal.id);
     setContributions(updatedHistory);
-    
-    // 🔥 NUEVO: Refrescar la lista de objetivos para ver el monto actualizado
     await refetch();
   };
 
@@ -85,7 +83,7 @@ export const GoalsPages = () => {
     setCollaborators(updatedCollabs);
   };
 
-  // Eliminar colaborador
+
   const handleRemoveCollaborator = async (collaboratorId: string) => {
     await removeCollaborator(collaboratorId);
     setCollaborators(prev => prev.filter(c => c.id !== collaboratorId));
@@ -94,23 +92,23 @@ export const GoalsPages = () => {
   return (
     <>
       <Navbar />
-      <div className="p-8 bg-background min-h-screen">
+      <div className="p-4 sm:p-6 lg:p-8 bg-background min-h-screen">
         <PageHeader
           title="Tus Objetivos de ahorro"
-          subtitle="Establece metas financieras y realiza un seguimiento de tu progreso de forma divertida."
+          description="Establece metas financieras y realiza un seguimiento de tu progreso de forma divertida."
           buttonText="Crear nuevo objetivo"
           onButtonClick={() => setIsCreateModalOpen(true)}
           icon={<FaPlus />}
         />
         
         {goals.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg mb-4">
+          <div className="text-center py-8 sm:py-12">
+            <p className="text-gray-400 text-base sm:text-lg mb-4">
               No tienes objetivos de ahorro todavía
             </p>
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="px-6 py-3 bg-secondary hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-secondary hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors text-sm sm:text-base"
             >
               Crear tu primer objetivo
             </button>

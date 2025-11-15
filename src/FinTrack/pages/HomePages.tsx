@@ -17,8 +17,8 @@ export const HomePages = () => {
     return (
       <>
         <Navbar />
-        <div className="p-8 bg-background min-h-screen flex items-center justify-center">
-          <p className="text-white text-xl">Cargando datos...</p>
+        <div className="p-4 sm:p-8 bg-background min-h-screen flex items-center justify-center">
+          <p className="text-white text-lg sm:text-xl">Cargando datos...</p>
         </div>
       </>
     );
@@ -27,10 +27,12 @@ export const HomePages = () => {
   return (
     <>
       <Navbar />
-      <div className="p-8 bg-background min-h-screen">
-        <h1 className="text-4xl font-bold text-white mb-8">Resumen Financiero</h1>
+      <div className="p-4 sm:p-6 lg:p-8 bg-background min-h-screen">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8">
+          Resumen Financiero
+        </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard 
             label="Dinero total" 
             amount={stats.totalBalance} 
@@ -48,7 +50,8 @@ export const HomePages = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Grid responsive para los gráficos */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           <CategoryBarChart 
             expenseData={expensesByCategory} 
             incomeData={incomeByCategory} 
