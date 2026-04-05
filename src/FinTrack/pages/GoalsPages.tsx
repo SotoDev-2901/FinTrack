@@ -13,15 +13,14 @@ import type { Goal, GoalContribution, GoalCollaborator } from "../reducers/goal/
 
 export const GoalsPages = () => {
   const { authState } = useAuth();
-  const { 
-    goals, 
-    createGoal, 
-    addContribution, 
+  const {
+    goals,
+    createGoal,
+    addContribution,
     getContributions,
     addCollaborator,
     getCollaborators,
-    removeCollaborator,
-    refetch
+    removeCollaborator
   } = useGoal();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -68,11 +67,10 @@ export const GoalsPages = () => {
   const handleAddSaving = async (amount: number, note: string, date: string) => {
     if (!selectedGoal) return;
     await addContribution(selectedGoal.id, amount, note, date);
-    
+
     // Recargar el historial
     const updatedHistory = await getContributions(selectedGoal.id);
     setContributions(updatedHistory);
-    await refetch();
   };
 
   // Añadir colaborador

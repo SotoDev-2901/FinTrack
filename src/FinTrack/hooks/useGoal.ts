@@ -1,14 +1,15 @@
-import { useReducer, useEffect, useCallback } from 'react';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  query, 
+import { useReducer, useEffect } from 'react';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
   where,
-  Timestamp 
+  Timestamp,
+  onSnapshot
 } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { useAuth } from '../../authentication/hooks/useAuth';
@@ -19,61 +20,110 @@ export const useGoal = () => {
   const { authState } = useAuth();
   const [state, dispatch] = useReducer(goalsReducer, initialGoalsState);
 
-  const fetchGoals = useCallback(async () => {
+  // Listener en tiempo real para goals
+  useEffect(() => {
     if (!authState.user?.uid || !authState.user?.email) return;
 
     const goalsRef = collection(db, 'goals');
+    const unsubscribers: (() => void)[] = [];
+    const allGoalsMap = new Map<string, Goal>();
+
+    // Función auxiliar para actualizar el estado
+    const updateGoalsState = () => {
+      let allGoals = Array.from(allGoalsMap.values());
+      allGoals = allGoals.sort((a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      dispatch({ type: 'SET_GOALS', payload: allGoals });
+    };
+
+    // Listener para goals propias
     const ownGoalsQuery = query(
-      goalsRef, 
+      goalsRef,
       where('userId', '==', authState.user.uid)
     );
-    
-    const ownGoalsSnapshot = await getDocs(ownGoalsQuery);
-    const ownGoals = ownGoalsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Goal[];
 
+    const unsubscribeOwnGoals = onSnapshot(ownGoalsQuery, (ownGoalsSnapshot) => {
+      // Actualizar map con goals propias
+      const currentOwnGoalIds = new Set<string>();
+
+      ownGoalsSnapshot.docs.forEach(doc => {
+        const goalId = doc.id;
+        currentOwnGoalIds.add(goalId);
+        allGoalsMap.set(goalId, {
+          id: goalId,
+          ...doc.data()
+        } as Goal);
+      });
+
+      // Remover goals propias que ya no existen
+      Array.from(allGoalsMap.keys()).forEach(id => {
+        const goal = allGoalsMap.get(id);
+        if (goal?.userId === authState.user.uid && !currentOwnGoalIds.has(id)) {
+          allGoalsMap.delete(id);
+        }
+      });
+
+      updateGoalsState();
+    });
+
+    unsubscribers.push(unsubscribeOwnGoals);
+
+    // Listener para detectar cuando se agregan/eliminan colaboradores
     const collaboratorsRef = collection(db, 'goalCollaborators');
     const collaboratorQuery = query(
       collaboratorsRef,
       where('email', '==', authState.user.email)
     );
-    
-    const collaboratorSnapshot = await getDocs(collaboratorQuery);
-    const sharedGoalIds = collaboratorSnapshot.docs.map(doc => doc.data().goalId);
 
-    let sharedGoals: Goal[] = [];
-    if (sharedGoalIds.length > 0) {
-      const sharedGoalsPromises = sharedGoalIds.map(async goalId => {
-        const goalDoc = await getDocs(query(goalsRef, where('__name__', '==', goalId)));
-        return goalDoc.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Goal[];
+    let sharedGoalListeners = new Map<string, () => void>();
+
+    const unsubscribeCollaborators = onSnapshot(collaboratorQuery, (collaboratorSnapshot) => {
+      const currentSharedGoalIds = new Set(
+        collaboratorSnapshot.docs.map(doc => doc.data().goalId)
+      );
+
+      // Eliminar listeners de goals que ya no son compartidas
+      sharedGoalListeners.forEach((unsub, goalId) => {
+        if (!currentSharedGoalIds.has(goalId)) {
+          unsub();
+          sharedGoalListeners.delete(goalId);
+          allGoalsMap.delete(goalId);
+        }
       });
-      
-      const sharedGoalsArrays = await Promise.all(sharedGoalsPromises);
-      sharedGoals = sharedGoalsArrays.flat();
-    }
 
-    const allGoalsMap = new Map<string, Goal>();
-    [...ownGoals, ...sharedGoals].forEach(goal => {
-      allGoalsMap.set(goal.id, goal);
+      // Agregar listeners para nuevas goals compartidas
+      currentSharedGoalIds.forEach(goalId => {
+        if (!sharedGoalListeners.has(goalId)) {
+          const goalDocRef = doc(db, 'goals', goalId);
+          const unsubscribeSharedGoal = onSnapshot(goalDocRef, (goalDoc) => {
+            if (goalDoc.exists()) {
+              allGoalsMap.set(goalId, {
+                id: goalDoc.id,
+                ...goalDoc.data()
+              } as Goal);
+            } else {
+              allGoalsMap.delete(goalId);
+            }
+            updateGoalsState();
+          });
+
+          sharedGoalListeners.set(goalId, unsubscribeSharedGoal);
+          unsubscribers.push(unsubscribeSharedGoal);
+        }
+      });
+
+      updateGoalsState();
     });
-    
-    let allGoals = Array.from(allGoalsMap.values());
-    
-    allGoals = allGoals.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    
-    dispatch({ type: 'SET_GOALS', payload: allGoals });
-  }, [authState.user?.uid, authState.user?.email]);
 
-  useEffect(() => {
-    fetchGoals();
-  }, [fetchGoals]);
+    unsubscribers.push(unsubscribeCollaborators);
+
+    // Cleanup: desuscribirse cuando el componente se desmonte
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+      sharedGoalListeners.forEach(unsub => unsub());
+    };
+  }, [authState.user?.uid, authState.user?.email]);
 
   const createGoal = async (goalData: {
     title: string;
@@ -140,12 +190,10 @@ export const useGoal = () => {
         updatedAt: Timestamp.now().toDate().toISOString()
       });
 
-      dispatch({ 
-        type: 'UPDATE_GOAL_AMOUNT', 
-        payload: { goalId, amount: newAmount } 
+      dispatch({
+        type: 'UPDATE_GOAL_AMOUNT',
+        payload: { goalId, amount: newAmount }
       });
-      
-      await fetchGoals();
     }
   };
 
@@ -188,7 +236,6 @@ export const useGoal = () => {
     };
 
     await addDoc(collection(db, 'goalCollaborators'), collaborator);
-    await fetchGoals();
   };
 
   const getCollaborators = async (goalId: string): Promise<GoalCollaborator[]> => {
@@ -245,7 +292,6 @@ export const useGoal = () => {
     addCollaborator,
     getCollaborators,
     removeCollaborator,
-    deleteGoal,
-    refetch: fetchGoals
+    deleteGoal
   };
 };

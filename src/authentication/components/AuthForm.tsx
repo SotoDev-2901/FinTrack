@@ -14,6 +14,7 @@ interface AuthFormProps {
   fields: AuthFormField[];
   formData: Record<string, string>;
   errorMessage?: string | null;
+  successMessage?: string;
   buttonText: string;
   footerText: string;
   footerLinkText: string;
@@ -24,12 +25,13 @@ interface AuthFormProps {
   socialNode?: React.ReactNode;
 }
 
-export const AuthForm = ({ 
+export const AuthForm = ({
   title,
   subtitle,
   fields,
   formData,
   errorMessage,
+  successMessage,
   buttonText,
   footerText,
   footerLinkText,
@@ -54,6 +56,12 @@ export const AuthForm = ({
           </div>
         )}
 
+        {successMessage && (
+          <div className="mb-4 p-3 bg-green-500/10 border border-green-500 rounded-xl">
+            <p className="text-green-500 text-xs sm:text-sm text-center">{successMessage}</p>
+          </div>
+        )}
+
         <form className="space-y-4 sm:space-y-5" onSubmit={onSubmit}>
           {fields.map((field) => (
             <AuthInput
@@ -71,7 +79,7 @@ export const AuthForm = ({
 
           {showForgotPassword && (
             <div className="text-right">
-              <Link to="#" className="text-secondary text-xs sm:text-sm hover:underline">
+              <Link to="/forgot-password" className="text-secondary text-xs sm:text-sm hover:underline">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>

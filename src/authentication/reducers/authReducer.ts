@@ -36,6 +36,19 @@ export const authReducer = (
         registerSuccess: false,
       };
 
+    case "RESET_PASSWORD_SUCCESS":
+      return {
+        ...state,
+        errorMessage: null,
+        resetPasswordSuccess: true,
+      };
+
+    case "CLEAR_RESET_PASSWORD_SUCCESS":
+      return {
+        ...state,
+        resetPasswordSuccess: false,
+      };
+
     case "ERROR":
       return {
         ...state,

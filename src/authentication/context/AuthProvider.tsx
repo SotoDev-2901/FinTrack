@@ -2,7 +2,7 @@ import { useReducer, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { authReducer } from "../reducers/authReducer";
 import type { AuthState } from "../reducers/authReducersInterface";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db, googleProvider} from "../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
@@ -110,8 +110,21 @@ export const AuthProvider = ({ children }: { children: any }) => {
     }
   };
 
+  const resetPassword = async (email: string): Promise<void> => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      dispatch({ type: "RESET_PASSWORD_SUCCESS" });
+    } catch (error: any) {
+      dispatch({ type: "ERROR", payload: { errorMessage: error.message } });
+    }
+  };
+
+  const clearResetPasswordSuccess = () => {
+    dispatch({ type: "CLEAR_RESET_PASSWORD_SUCCESS" });
+  };
+
   return (
-    <AuthContext.Provider value={{ authState, login, register, logout, singInWithGoogle }}>
+    <AuthContext.Provider value={{ authState, login, register, logout, singInWithGoogle, resetPassword, clearResetPasswordSuccess }}>
       {children}
     </AuthContext.Provider>
   );

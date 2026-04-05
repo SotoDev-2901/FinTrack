@@ -7,6 +7,8 @@ interface AuthContextState {
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   singInWithGoogle: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  clearResetPasswordSuccess: () => void;
 }
 
 export const AuthContext = createContext({} as AuthContextState);

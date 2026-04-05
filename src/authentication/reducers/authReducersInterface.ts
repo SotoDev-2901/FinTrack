@@ -8,6 +8,7 @@ export interface AuthState {
   user: User | null;
   errorMessage: string | null;
   registerSuccess?: boolean;
+  resetPasswordSuccess?: boolean;
 }
 
 export type AuthAction =
@@ -15,5 +16,7 @@ export type AuthAction =
   | { type: 'LOGOUT' }
   | { type: 'REGISTER'; }
   | { type: 'ERROR'; payload: { errorMessage: string } }
-  | { type: "CLEAR_REGISTER_SUCCESS" };
+  | { type: "CLEAR_REGISTER_SUCCESS" }
+  | { type: "RESET_PASSWORD_SUCCESS" }
+  | { type: "CLEAR_RESET_PASSWORD_SUCCESS" };
   

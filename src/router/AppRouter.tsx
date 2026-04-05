@@ -7,6 +7,7 @@ import { GoalsPages } from "../FinTrack/pages/GoalsPages"
 import { NotFound } from "../FinTrack/pages/NotFoundPages"
 import { LoginPages } from "../authentication/pages/LoginPages"
 import { RegisterPages } from "../authentication/pages/RegisterPages"
+import { ForgotPasswordPages } from "../authentication/pages/ForgotPasswordPages"
 
 import { useAuth } from "../authentication/hooks/useAuth"
 import { ProtectedRoute } from "../authentication/components/ProtectedRoute"
@@ -20,6 +21,7 @@ export const AppRouter = () => {
     <Routes>
       <Route path="/login" element={authState.logged ? <Navigate to="/" replace /> : <LoginPages />} />
       <Route path="/register" element={authState.logged ? <Navigate to="/" replace /> : <RegisterPages />} />
+      <Route path="/forgot-password" element={authState.logged ? <Navigate to="/" replace /> : <ForgotPasswordPages />} />
       <Route path="/" element={<ProtectedRoute><HomePages /></ProtectedRoute>} />
       <Route path="/transactions" element={<ProtectedRoute><TransactionsPages /></ProtectedRoute>} />
       <Route path="/transactions/categories" element={<ProtectedRoute><TransactionCategoriesPages /></ProtectedRoute>} />
