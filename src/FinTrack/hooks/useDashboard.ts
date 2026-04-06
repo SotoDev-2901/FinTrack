@@ -1,13 +1,19 @@
-import { useReducer, useEffect, useCallback } from 'react';
+import { useReducer, useEffect, useCallback, useState, useMemo } from 'react';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { useAuth } from '../../authentication/hooks/useAuth';
 import { dashboardReducer, initialDashboardState } from '../reducers/dashboard/dashboardReducers';
 import type { Transaction, CategoryStats, BalanceHistory } from '../reducers/dashboard/dashboardReducersInterface';
 
+export interface MonthOption {
+  value: string;
+  label: string;
+}
+
 export const useDashboard = () => {
   const { authState } = useAuth();
   const [state, dispatch] = useReducer(dashboardReducer, initialDashboardState);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const fetchTransactions = useCallback(async (): Promise<Transaction[]> => {
     if (!authState.user?.uid) {
@@ -86,8 +92,16 @@ export const useDashboard = () => {
     return stats;
   };
 
-  const groupByCategory = (transactions: Transaction[], type: 'income' | 'expense'): CategoryStats[] => {
-    const filtered = transactions.filter(t => t.type === type);
+  const groupByCategory = (transactions: Transaction[], type: 'income' | 'expense', monthFilter?: string): CategoryStats[] => {
+    let filtered = transactions.filter(t => t.type === type);
+
+    if (monthFilter && monthFilter !== 'all') {
+      filtered = filtered.filter(t => {
+        const date = new Date(t.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        return monthKey === monthFilter;
+      });
+    }
 
     const grouped = filtered.reduce((acc, transaction) => {
       const categoryName = transaction.categoryName || 'Sin categoría';
@@ -147,18 +161,19 @@ export const useDashboard = () => {
     dispatch({ type: 'SET_LOADING', payload: true });
 
     try {
-      const transactions = await fetchTransactions();
+      const fetchedTransactions = await fetchTransactions();
+      setTransactions(fetchedTransactions);
 
-      const stats = calculateStats(transactions);
+      const stats = calculateStats(fetchedTransactions);
       dispatch({ type: 'SET_STATS', payload: stats });
 
-      const expensesByCategory = groupByCategory(transactions, 'expense');
+      const expensesByCategory = groupByCategory(fetchedTransactions, 'expense');
       dispatch({ type: 'SET_EXPENSES_BY_CATEGORY', payload: expensesByCategory });
 
-      const incomeByCategory = groupByCategory(transactions, 'income');
+      const incomeByCategory = groupByCategory(fetchedTransactions, 'income');
       dispatch({ type: 'SET_INCOME_BY_CATEGORY', payload: incomeByCategory });
 
-      const balanceHistory = calculateBalanceHistory(transactions);
+      const balanceHistory = calculateBalanceHistory(fetchedTransactions);
       dispatch({ type: 'SET_BALANCE_HISTORY', payload: balanceHistory });
 
     } catch (error) {
@@ -172,12 +187,37 @@ export const useDashboard = () => {
     loadDashboardData();
   }, [loadDashboardData]);
 
+  const availableMonths = useMemo((): MonthOption[] => {
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const options: MonthOption[] = [{ value: 'all', label: 'Total' }];
+    const now = new Date();
+
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      options.push({
+        value: monthKey,
+        label: `${monthNames[date.getMonth()]} ${date.getFullYear()}`
+      });
+    }
+
+    return options;
+  }, []);
+
+  const getCategoryDataByMonth = useCallback((type: 'income' | 'expense', monthFilter: string): CategoryStats[] => {
+    return groupByCategory(transactions, type, monthFilter);
+  }, [transactions]);
+
   return {
     stats: state.stats,
     expensesByCategory: state.expensesByCategory,
     incomeByCategory: state.incomeByCategory,
     balanceHistory: state.balanceHistory,
     loading: state.loading,
-    refetch: loadDashboardData
+    refetch: loadDashboardData,
+    availableMonths,
+    getCategoryDataByMonth
   };
 };

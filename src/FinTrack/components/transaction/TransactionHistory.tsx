@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 
 interface Transaction {
@@ -5,7 +6,7 @@ interface Transaction {
   type: 'expense' | 'income';
   amount: number;
   categoryId: string;
-  categoryName?: string; 
+  categoryName?: string;
   date: string;
   description?: string;
   createAt?: any;
@@ -22,17 +23,62 @@ export const TransactionHistory  = ({
   onEdit,
   onDelete
 }: TransactionHistoryProps) => {
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+
+  const availableMonths = useMemo(() => {
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const options = [{ value: 'all', label: 'Todos los meses' }];
+    const now = new Date();
+
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      options.push({
+        value: monthKey,
+        label: `${monthNames[date.getMonth()]} ${date.getFullYear()}`
+      });
+    }
+
+    return options;
+  }, []);
+
+  const filteredTransactions = useMemo(() => {
+    if (selectedMonth === 'all') {
+      return transactions;
+    }
+    return transactions.filter(t => {
+      const date = new Date(t.date);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      return monthKey === selectedMonth;
+    });
+  }, [transactions, selectedMonth]);
+
   const formatNumber = (amount: number) => {
     return new Intl.NumberFormat('es-ES').format(amount);
   };
 
   const formatDate = (dateString: string) => {
-  const date = new Date(dateString + 'T00:00:00');
-  return date.toLocaleDateString('es-ES');
-};
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('es-ES');
+  };
 
   return (
     <div className="bg-background rounded-lg shadow-sm">
+      <div className="p-4 border-b border-gray-700">
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-semibold bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-secondary cursor-pointer"
+        >
+          {availableMonths.map((month) => (
+            <option key={month.value} value={month.value}>
+              {month.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-[#242F3A]">
@@ -55,7 +101,7 @@ export const TransactionHistory  = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-400">
-            {transactions.map((transaction) => (
+            {filteredTransactions.map((transaction) => (
               <tr key={transaction.id} className="hover:bg-[#242F3A]">
                 <td className="py-4 px-6 text-sm text-gray-400">
                   {formatDate(transaction.date)}
@@ -97,10 +143,16 @@ export const TransactionHistory  = ({
         </table>
       </div>
       
-      {transactions.length === 0 && (
+      {filteredTransactions.length === 0 && (
         <div className="text-center py-12 text-gray-500">
-          <p>No hay transacciones registradas</p>
-          <p className="text-sm">Haz clic en "Nueva Transacción" para comenzar</p>
+          {selectedMonth === 'all' ? (
+            <>
+              <p>No hay transacciones registradas</p>
+              <p className="text-sm">Haz clic en "Nueva Transacción" para comenzar</p>
+            </>
+          ) : (
+            <p>No hay transacciones para este mes</p>
+          )}
         </div>
       )}
     </div>

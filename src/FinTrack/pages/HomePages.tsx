@@ -10,7 +10,9 @@ export const HomePages = () => {
     expensesByCategory,
     incomeByCategory,
     balanceHistory,
-    loading
+    loading,
+    availableMonths,
+    getCategoryDataByMonth
   } = useDashboard();
 
   if (loading) {
@@ -52,9 +54,11 @@ export const HomePages = () => {
 
         {/* Grid responsive para los gráficos */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-          <CategoryBarChart 
-            expenseData={expensesByCategory} 
-            incomeData={incomeByCategory} 
+          <CategoryBarChart
+            expenseData={expensesByCategory}
+            incomeData={incomeByCategory}
+            availableMonths={availableMonths}
+            getCategoryDataByMonth={getCategoryDataByMonth}
           />
           <BalanceAreaChart data={balanceHistory} />
         </div>

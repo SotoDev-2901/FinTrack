@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface CategoryData {
@@ -6,13 +6,36 @@ interface CategoryData {
   amount: number;
 }
 
+interface MonthOption {
+  value: string;
+  label: string;
+}
+
 interface CategoryBarChartProps {
   expenseData: CategoryData[];
   incomeData: CategoryData[];
+  availableMonths: MonthOption[];
+  getCategoryDataByMonth: (type: 'income' | 'expense', monthFilter: string) => CategoryData[];
 }
 
-export const CategoryBarChart = ({ expenseData, incomeData }: CategoryBarChartProps) => {
+export const CategoryBarChart = ({
+  expenseData,
+  incomeData,
+  availableMonths,
+  getCategoryDataByMonth
+}: CategoryBarChartProps) => {
   const [activeTab, setActiveTab] = useState<'expenses' | 'income'>('expenses');
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [currentData, setCurrentData] = useState<CategoryData[]>(expenseData);
+
+  useEffect(() => {
+    const type = activeTab === 'expenses' ? 'expense' : 'income';
+    if (selectedMonth === 'all') {
+      setCurrentData(activeTab === 'expenses' ? expenseData : incomeData);
+    } else {
+      setCurrentData(getCategoryDataByMonth(type, selectedMonth));
+    }
+  }, [activeTab, selectedMonth, expenseData, incomeData, getCategoryDataByMonth]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -40,36 +63,47 @@ export const CategoryBarChart = ({ expenseData, incomeData }: CategoryBarChartPr
     return tickItem;
   };
 
-  const currentData = activeTab === 'expenses' ? expenseData : incomeData;
-
   return (
     <div className="bg-[#1A2C3D] rounded-2xl p-4 sm:p-6 border border-secondary/30">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">
-          Gasto/Ingreso por Categoría
-        </h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setActiveTab('expenses')}
-            className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
-              activeTab === 'expenses'
-                ? 'bg-secondary text-white'
-                : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-            }`}
-          >
-            Gastos
-          </button>
-          <button
-            onClick={() => setActiveTab('income')}
-            className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
-              activeTab === 'income'
-                ? 'bg-secondary text-white'
-                : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-            }`}
-          >
-            Ingresos
-          </button>
+      <div className="flex flex-col gap-3 mb-4 sm:mb-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">
+            Gasto/Ingreso por Categoría
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('expenses')}
+              className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
+                activeTab === 'expenses'
+                  ? 'bg-secondary text-white'
+                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+              }`}
+            >
+              Gastos
+            </button>
+            <button
+              onClick={() => setActiveTab('income')}
+              className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
+                activeTab === 'income'
+                  ? 'bg-secondary text-white'
+                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+              }`}
+            >
+              Ingresos
+            </button>
+          </div>
         </div>
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg text-sm font-semibold bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-secondary cursor-pointer"
+        >
+          {availableMonths.map((month) => (
+            <option key={month.value} value={month.value}>
+              {month.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <ResponsiveContainer width="100%" height={250} className="sm:h-[300px]">
