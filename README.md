@@ -109,3 +109,36 @@ npm run dev
 # o
 yarn dev
 ```
+
+### 4. Fuente real de tasas CDT
+
+FinTrack consulta por defecto datos oficiales de Colombia desde `datos.gov.co` (dataset de tasas de captación/CDT de la Superintendencia Financiera).
+
+Si quieres usar otra fuente (por ejemplo tu propio backend), puedes sobrescribirla con `.env.local`:
+
+```bash
+VITE_CDT_RATES_API_URL=https://tu-endpoint.com/cdt-rates
+```
+
+### 5. Formato esperado para endpoint personalizado
+
+```bash
+Si usas VITE_CDT_RATES_API_URL, el endpoint puede responder cualquiera de estos formatos JSON:
+```
+
+```json
+[
+	{ "bank": "Banco de Bogota", "rate": 11.2, "term": 360, "minAmount": 2000000 },
+	{ "bank": "Davivienda", "rate": 11.0, "term": 360, "minAmount": 500000 }
+]
+```
+
+```json
+{
+	"data": [
+		{ "banco": "Bancolombia", "tasa": 10.5, "plazo": 360, "montoMinimo": 1000000 }
+	]
+}
+```
+
+Si la API no responde o devuelve datos inválidos, FinTrack mostrará tasas de referencia para no afectar la experiencia.

@@ -2,6 +2,7 @@ import { Navbar } from "../components/Navbar";
 import { StatCard } from "../components/dashboard/StatCard";
 import { CategoryBarChart } from "../components/dashboard/CategoryBarChart";
 import { BalanceAreaChart } from "../components/dashboard/BalanceAreaChart";
+import { InvestmentSuggestions } from "../components/dashboard/InvestmentSuggestions";
 import { useDashboard } from "../hooks/useDashboard";
 
 export const HomePages = () => {
@@ -12,7 +13,8 @@ export const HomePages = () => {
     balanceHistory,
     loading,
     availableMonths,
-    getCategoryDataByMonth
+    getCategoryDataByMonth,
+    monthlyAverages
   } = useDashboard();
 
   if (loading) {
@@ -53,7 +55,7 @@ export const HomePages = () => {
         </div>
 
         {/* Grid responsive para los gráficos */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <CategoryBarChart
             expenseData={expensesByCategory}
             incomeData={incomeByCategory}
@@ -62,6 +64,13 @@ export const HomePages = () => {
           />
           <BalanceAreaChart data={balanceHistory} />
         </div>
+
+        {/* Consejos Financieros */}
+        <InvestmentSuggestions
+          totalBalance={stats.totalBalance}
+          monthlyExpenseAvg={monthlyAverages.monthlyExpenseAvg}
+          monthlyIncomeAvg={monthlyAverages.monthlyIncomeAvg}
+        />
       </div>
     </>
   );
