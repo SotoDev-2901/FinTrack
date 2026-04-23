@@ -5,7 +5,7 @@ interface AuthContextState {
   authState: AuthState;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   singInWithGoogle: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearResetPasswordSuccess: () => void;

@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import { AuthContext } from "./AuthContext";
 import { authReducer } from "../reducers/authReducer";
 import type { AuthState } from "../reducers/authReducersInterface";
@@ -12,6 +12,8 @@ const initialState: AuthState = {
   user: null,
   errorMessage: null,
 };
+
+const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 
 const loadAuthState = (): AuthState => {
   try {
@@ -31,6 +33,14 @@ export const AuthProvider = ({ children }: { children: any }) => {
     initialState,
     loadAuthState
   );
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("authState", JSON.stringify(authState));
@@ -91,7 +101,7 @@ export const AuthProvider = ({ children }: { children: any }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await signOut(auth);
       dispatch({ type: "LOGOUT" });
@@ -99,7 +109,42 @@ export const AuthProvider = ({ children }: { children: any }) => {
     } catch (error: any) {
       dispatch({ type: "ERROR", payload: { errorMessage: error.message } });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!authState.logged) {
+      clearInactivityTimer();
+      return;
+    }
+
+    const activityEvents: Array<keyof WindowEventMap> = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "scroll",
+      "touchstart",
+    ];
+
+    const resetInactivityTimer = () => {
+      clearInactivityTimer();
+      inactivityTimerRef.current = setTimeout(() => {
+        void logout();
+      }, INACTIVITY_TIMEOUT_MS);
+    };
+
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, resetInactivityTimer);
+    });
+
+    resetInactivityTimer();
+
+    return () => {
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, resetInactivityTimer);
+      });
+      clearInactivityTimer();
+    };
+  }, [authState.logged, clearInactivityTimer, logout]);
 
   const singInWithGoogle = async (): Promise<void> => {
     try {
