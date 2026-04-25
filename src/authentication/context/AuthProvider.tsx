@@ -13,7 +13,35 @@ const initialState: AuthState = {
   errorMessage: null,
 };
 
-const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+// Inactivity timeout configuration
+// Default: 10 minutes. You can override via env or localStorage for testing.
+// Order of precedence:
+// 1. localStorage key 'FT_INACTIVITY_TIMEOUT_MS' (milliseconds)
+// 2. Vite env var VITE_INACTIVITY_TIMEOUT_MS or CRA env REACT_APP_INACTIVITY_TIMEOUT_MS
+// 3. default 30 minutes
+const DEFAULT_INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
+const TEST_INACTIVITY_TIMEOUT_MS = 1 * 60 * 1000; // convenient constant for quick manual testing
+
+const INACTIVITY_TIMEOUT_MS: number = (() => {
+  try {
+    const ls = (typeof window !== 'undefined' && window.localStorage.getItem('FT_INACTIVITY_TIMEOUT_MS')) || undefined;
+    if (ls) return Number(ls);
+  } catch (err) {
+    // ignore
+  }
+
+  // support Vite and CRA env vars
+  const envVal = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_INACTIVITY_TIMEOUT_MS as string | undefined) : process.env.REACT_APP_INACTIVITY_TIMEOUT_MS;
+  if (envVal) {
+    const n = Number(envVal);
+    if (!Number.isNaN(n)) return n;
+  }
+
+  return DEFAULT_INACTIVITY_TIMEOUT_MS;
+})();
+
+// Enable debug logs when running in dev (Vite's import.meta.env.DEV) or NODE_ENV !== 'production'
+const INACTIVITY_DEBUG = (typeof import.meta !== 'undefined' && Boolean((import.meta as any).env?.DEV)) || process.env.NODE_ENV !== 'production';
 
 const loadAuthState = (): AuthState => {
   try {
@@ -33,11 +61,14 @@ export const AuthProvider = ({ children }: { children: any }) => {
     initialState,
     loadAuthState
   );
-  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // use number | null to match browser setTimeout return type and keep TypeScript happy
+  const inactivityTimerRef = useRef<number | null>(null);
 
   const clearInactivityTimer = useCallback(() => {
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
+    if (inactivityTimerRef.current !== null) {
+      if (INACTIVITY_DEBUG) console.debug('[Inactivity] clear timer id=', inactivityTimerRef.current);
+      // window.clearTimeout expects a number in browsers
+      window.clearTimeout(inactivityTimerRef.current);
       inactivityTimerRef.current = null;
     }
   }, []);
@@ -54,8 +85,10 @@ export const AuthProvider = ({ children }: { children: any }) => {
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
         };
+        if (INACTIVITY_DEBUG) console.debug('[Inactivity] onAuthStateChanged: LOGIN', user?.uid);
         dispatch({ type: "LOGIN", payload: { user } });
       } else {
+        if (INACTIVITY_DEBUG) console.debug('[Inactivity] onAuthStateChanged: LOGOUT');
         dispatch({ type: "LOGOUT" });
       }
     });
@@ -127,9 +160,13 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
     const resetInactivityTimer = () => {
       clearInactivityTimer();
-      inactivityTimerRef.current = setTimeout(() => {
+      // store numeric id returned by window.setTimeout
+      inactivityTimerRef.current = window.setTimeout(() => {
+        if (INACTIVITY_DEBUG) console.debug('[Inactivity] timer fired -> calling logout');
+        // explicit void to ignore promise
         void logout();
       }, INACTIVITY_TIMEOUT_MS);
+      if (INACTIVITY_DEBUG) console.debug('[Inactivity] set timer id=', inactivityTimerRef.current, 'timeoutMs=', INACTIVITY_TIMEOUT_MS);
     };
 
     activityEvents.forEach((eventName) => {

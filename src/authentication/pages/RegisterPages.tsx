@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify'
 import { useAuth } from "../hooks/useAuth";
 import { AuthForm } from "../components/AuthForm";
 import { FcGoogle } from "react-icons/fc";
@@ -21,11 +22,20 @@ export const RegisterPages = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("❌Las contraseñas no coinciden");
+      toast.error("❌Las contraseñas no coinciden");
       return;
     }
     await register(formData.email, formData.password);
-    if (authState.logged) navigate("/");
+    // Si el registro fue exitoso, el estado authState.registerSuccess se marca true
+    if (authState.registerSuccess) {
+      toast.success('Registro exitoso — redirigiendo al login', {
+        autoClose: 3000,
+        onClose: () => navigate('/login')
+      })
+    } else if (authState.logged) {
+      // Por si el flujo cambia y queda logueado, navegar al root
+      navigate("/");
+    }
   };
 
   const handleGoogleSignIn = async () => {
