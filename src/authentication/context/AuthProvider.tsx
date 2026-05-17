@@ -42,7 +42,7 @@ const INACTIVITY_TIMEOUT_MS: number = (() => {
   }
 
   // support Vite and CRA env vars
-  const envVal = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_INACTIVITY_TIMEOUT_MS as string | undefined) : process.env.REACT_APP_INACTIVITY_TIMEOUT_MS;
+  const envVal = (import.meta.env?.VITE_INACTIVITY_TIMEOUT_MS as string | undefined);
   if (envVal) {
     const n = Number(envVal);
     if (!Number.isNaN(n)) {
@@ -58,8 +58,8 @@ const INACTIVITY_TIMEOUT_MS: number = (() => {
   return DEFAULT_INACTIVITY_TIMEOUT_MS;
 })();
 
-// Enable debug logs when running in dev (Vite's import.meta.env.DEV) or when NODE_ENV is 'development'
-const INACTIVITY_DEBUG = (typeof import.meta !== 'undefined' && Boolean((import.meta as any).env?.DEV)) || process.env.NODE_ENV === 'development';
+// Enable debug logs when running in dev (Vite's import.meta.env.DEV)
+const INACTIVITY_DEBUG = (typeof import.meta !== 'undefined' && Boolean((import.meta as any).env?.DEV));
 
 const loadAuthState = (): AuthState => {
   try {

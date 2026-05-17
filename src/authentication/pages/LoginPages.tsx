@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { AuthForm } from "../components/AuthForm";
-import { FcGoogle } from "react-icons/fc";
 
 export const LoginPages = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { login, singInWithGoogle, authState } = useAuth();
+  const { login, authState } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: any) => {
@@ -20,21 +19,21 @@ export const LoginPages = () => {
     if (authState.logged) navigate("/");
   };
 
-  const handleGoogleSignIn = async () => {
+  {/*const handleGoogleSignIn = async () => {
     try {
       await singInWithGoogle();
       navigate("/");
     } catch (error) {
       console.error("Error con Google:", error);
     }
-  };
+  };*/}
 
   const loginFields = [
     { type: "email" as const, id: "email", name: "email", placeholder: "Correo electrónico" },
     { type: "password" as const, id: "password", name: "password", placeholder: "Contraseña" },
   ];
 
-    const googleNode = (
+    {/*const googleNode = (
       <button
         type="button"
         aria-label="Iniciar sesión con Google"
@@ -46,7 +45,7 @@ export const LoginPages = () => {
         </span>
         <span className="text-sm font-medium">Iniciar sesión con Google</span>
       </button>
-    );
+    );*/}
 
   return (
     <AuthForm
@@ -62,7 +61,7 @@ export const LoginPages = () => {
       onSubmit={handleSubmit}
       onChange={handleChange}
       showForgotPassword
-      socialNode={googleNode}
+      //socialNode={googleNode}
     />
   );
 };

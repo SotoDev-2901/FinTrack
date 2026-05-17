@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify'
 import { useAuth } from "../hooks/useAuth";
 import { AuthForm } from "../components/AuthForm";
-import { FcGoogle } from "react-icons/fc";
 
 export const RegisterPages = () => {
   const [formData, setFormData] = useState({ 
@@ -11,7 +10,7 @@ export const RegisterPages = () => {
     password: "", 
     confirmPassword: "" 
   });
-  const { register, singInWithGoogle, authState } = useAuth();
+  const { register, authState } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: any) => {
@@ -38,14 +37,14 @@ export const RegisterPages = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  {/*const handleGoogleSignIn = async () => {
     try {
       await singInWithGoogle();
       navigate("/");
     } catch (error) {
       console.error("Error con Google:", error);
     }
-  };
+  };*/}
 
   const registerFields = [
     { type: "email" as const, id: "email", name: "email", placeholder: "Correo electrónico" },
@@ -53,7 +52,7 @@ export const RegisterPages = () => {
     { type: "password" as const, id: "confirmPassword", name: "confirmPassword", placeholder: "Confirmar Contraseña" },
   ];
 
-  const googleNode = (
+  {/*const googleNode = (
     <button
       type="button"
       aria-label="Iniciar sesión con Google"
@@ -65,7 +64,7 @@ export const RegisterPages = () => {
       </span>
       <span className="text-sm font-medium">Regístrate con Google</span>
     </button>
-  );
+  );*/}
 
   return (
     <AuthForm
@@ -80,7 +79,7 @@ export const RegisterPages = () => {
       footerLinkTo="/login"
       onSubmit={handleSubmit}
       onChange={handleChange}
-      socialNode={googleNode}
+      //socialNode={googleNode}
     />
   );
 };

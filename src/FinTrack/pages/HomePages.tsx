@@ -31,6 +31,7 @@ export const HomePages = () => {
   return (
     <>
       <Navbar />
+      
       <div className="p-4 sm:p-6 lg:p-8 bg-background min-h-screen">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8">
           Resumen Financiero
@@ -54,7 +55,7 @@ export const HomePages = () => {
           />
         </div>
 
-        {/* Grid responsive para los gráficos */}
+        
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <CategoryBarChart
             expenseData={expensesByCategory}
@@ -65,7 +66,7 @@ export const HomePages = () => {
           <BalanceAreaChart data={balanceHistory} />
         </div>
 
-        {/* Consejos Financieros */}
+       
         <InvestmentSuggestions
           totalBalance={stats.totalBalance}
           monthlyExpenseAvg={monthlyAverages.monthlyExpenseAvg}

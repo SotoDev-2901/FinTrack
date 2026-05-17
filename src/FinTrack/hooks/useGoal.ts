@@ -59,7 +59,7 @@ export const useGoal = () => {
       // Remover goals propias que ya no existen
       Array.from(allGoalsMap.keys()).forEach(id => {
         const goal = allGoalsMap.get(id);
-        if (goal?.userId === authState.user.uid && !currentOwnGoalIds.has(id)) {
+        if (goal?.userId === authState.user?.uid && !currentOwnGoalIds.has(id)) {
           allGoalsMap.delete(id);
         }
       });
