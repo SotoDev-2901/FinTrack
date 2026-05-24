@@ -25,7 +25,7 @@ export const AppRouter = () => {
       <Route path="/" element={<ProtectedRoute><HomePages /></ProtectedRoute>} />
       <Route path="/transactions" element={<ProtectedRoute><TransactionsPages /></ProtectedRoute>} />
       <Route path="/transactions/categories" element={<ProtectedRoute><TransactionCategoriesPages /></ProtectedRoute>} />
-      <Route path="/goals" element={<ProtectedRoute><GoalsPages /></ProtectedRoute>} />
+      {/* <Route path="/goals" element={<ProtectedRoute><GoalsPages /></ProtectedRoute>} /> */}
       <Route path="*" element={<NotFound />} />
     </Routes>
     </>
