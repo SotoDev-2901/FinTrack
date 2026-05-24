@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { RxHamburgerMenu, RxCross2, RxExit } from "react-icons/rx";
+import { toast } from "react-toastify";
 import { useAuth } from "../../authentication/hooks/useAuth";
 import Logo from '../../assets/Logo.png';
 
@@ -36,6 +37,7 @@ export const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      toast.success("Sesión cerrada con éxito, lo esperamos pronto");
       setIsOpen(false);
       navigate("/login");
     } catch (error) {

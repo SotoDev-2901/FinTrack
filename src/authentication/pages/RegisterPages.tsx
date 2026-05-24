@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify'
 import { useAuth } from "../hooks/useAuth";
 import { AuthForm } from "../components/AuthForm";
+import { isValidEmail } from "../utils/validateEmail";
 
 export const RegisterPages = () => {
   const [formData, setFormData] = useState({ 
@@ -20,20 +21,17 @@ export const RegisterPages = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    if (!isValidEmail(formData.email)) {
+      toast.error("El correo debe tener un formato válido que cumpla con el formato '@dominio.com'");
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       toast.error("❌Las contraseñas no coinciden");
       return;
     }
-    await register(formData.email, formData.password);
-    // Si el registro fue exitoso, el estado authState.registerSuccess se marca true
-    if (authState.registerSuccess) {
-      toast.success('Registro exitoso — redirigiendo al login', {
-        autoClose: 3000,
-        onClose: () => navigate('/login')
-      })
-    } else if (authState.logged) {
-      // Por si el flujo cambia y queda logueado, navegar al root
-      navigate("/");
+    const registered = await register(formData.email, formData.password);
+    if (registered) {
+      navigate('/login');
     }
   };
 

@@ -4,7 +4,7 @@ import type { AuthState } from "../reducers/authReducersInterface";
 interface AuthContextState {
   authState: AuthState;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   singInWithGoogle: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;

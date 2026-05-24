@@ -147,8 +147,15 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
       await signOut(auth);
       dispatch({ type: "REGISTER" });
+      return true;
     } catch (error: any) {
-      dispatch({ type: "ERROR", payload: { errorMessage: error.message } });
+      const errorMessage =
+        error?.code === "auth/email-already-in-use"
+          ? "Este correo ya tiene una cuenta activa"
+          : error.message;
+
+      dispatch({ type: "ERROR", payload: { errorMessage } });
+      return false;
     }
   };
 

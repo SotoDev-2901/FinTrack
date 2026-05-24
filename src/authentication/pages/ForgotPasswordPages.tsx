@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify'
 import { useAuth } from "../hooks/useAuth";
 import { AuthForm } from "../components/AuthForm";
+import { isValidEmail } from "../utils/validateEmail";
 
 export const ForgotPasswordPages = () => {
   const [formData, setFormData] = useState({ email: "" });
@@ -19,6 +21,10 @@ export const ForgotPasswordPages = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    if (!isValidEmail(formData.email)) {
+      toast.error("El correo debe tener un formato válido que cumpla con el formato '@dominio.com'");
+      return;
+    }
     await resetPassword(formData.email);
   };
 
