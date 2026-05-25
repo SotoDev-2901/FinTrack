@@ -2,7 +2,6 @@ import { Navbar } from "../components/Navbar";
 import { StatCard } from "../components/dashboard/StatCard";
 import { CategoryBarChart } from "../components/dashboard/CategoryBarChart";
 import { BalanceAreaChart } from "../components/dashboard/BalanceAreaChart";
-import { InvestmentSuggestions } from "../components/dashboard/InvestmentSuggestions";
 import { useDashboard } from "../hooks/useDashboard";
 
 export const HomePages = () => {
@@ -14,7 +13,6 @@ export const HomePages = () => {
     loading,
     availableMonths,
     getCategoryDataByMonth,
-    monthlyAverages
   } = useDashboard();
 
   if (loading) {
@@ -66,12 +64,13 @@ export const HomePages = () => {
           <BalanceAreaChart data={balanceHistory} />
         </div>
 
-       
+        {/*
         <InvestmentSuggestions
           totalBalance={stats.totalBalance}
           monthlyExpenseAvg={monthlyAverages.monthlyExpenseAvg}
           monthlyIncomeAvg={monthlyAverages.monthlyIncomeAvg}
         />
+        */}
       </div>
     </>
   );
